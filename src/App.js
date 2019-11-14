@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import Box from "3box";
+import ChatBox from '3box-chatbox-react';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
-const getThreeBox = async (address) => {
+const getThreeBox = async address => {
   const profile = await Box.getProfile(address);
   return profile;
 };
 
 export default class App extends Component {
-
   state = {
-    needToAWeb3Browser : false,
-  }
+    needToAWeb3Browser: false
+  };
   async getAddressFromMetaMask() {
     if (typeof window.ethereum == "undefined") {
       this.setState({ needToAWeb3Browser: true });
@@ -27,19 +27,18 @@ export default class App extends Component {
       //using the address saved in getAddressFromMetaMask func
       // open 3Box buy authenticating a user https://docs.3box.io/build/web-apps/auth/3box
       // This method will trigger the users ETH wallet  to sign a message
-      // Once the user has approved, they can update, decrypt, and interact  
+      // Once the user has approved, they can update, decrypt, and interact
       // with their 3Box profile store.
       const box = await Box.openBox(this.state.accounts[0], window.ethereum);
-      this.setState({box});
+      this.setState({ box });
       // Sync 3Box
-      await box.syncDone
-      console.log("3Box synced"); 
+      await box.syncDone;
+      console.log("3Box synced");
     }
   }
   render() {
-
-    if(this.state.needToAWeb3Browser){
-      return <h1>Please install metamask</h1>
+    if (this.state.needToAWeb3Browser) {
+      return <h1>Please install metamask</h1>;
     }
 
     return (
@@ -61,7 +60,12 @@ export default class App extends Component {
               <Profile />
             </Route>
             <Route path="/">
-              <Home />
+              {this.state.box && <ChatBox
+                spaceName="testingnov"
+                threadName="testingnovthread"
+                box={this.state.box}
+                currentUserAddr={this.state.accounts[0]}
+              />}
             </Route>
           </Switch>
         </div>
